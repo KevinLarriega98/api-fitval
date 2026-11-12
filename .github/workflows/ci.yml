@@ -1,5 +1,3 @@
-# CI mínimo: revisa el código en cada push a main y en cada PR hacia main.
-# Cada job es un "check" que sale con ✅ o ❌ en GitHub.
 name: ci
 
 on:
