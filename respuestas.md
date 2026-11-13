@@ -28,3 +28,11 @@ WHERE c.activity ILIKE '%zzz' OR 1=1 --%' ORDER BY c.starts_at
 ```
 
 La comilla cierra el texto, `OR 1=1` hace que todas las filas cumplan la condición y `--` comenta el resto. Con `$1`, el valor se trata como un dato, no como instrucciones SQL, y ninguna actividad coincide.
+
+## Ejercicio 4 — Pregunta 3
+
+Comprobamos que el monitor existe para devolver un 400 con un mensaje claro cuando el cliente envía un `trainerId` inexistente en el body. Sin esa comprobación ni un manejo específico del error de clave ajena, PostgreSQL rechazaría la inserción y el cliente recibiría un 500 genérico.
+
+## Ejercicio 4 — Pregunta 4
+
+Borrar una clase con reservas devuelve 409 porque la petición es válida, pero entra en conflicto con el estado actual de la clase: tiene reservas asociadas. Un 400 indicaría que los datos de la petición son incorrectos.
