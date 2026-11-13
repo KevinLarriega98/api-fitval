@@ -36,3 +36,7 @@ Comprobamos que el monitor existe para devolver un 400 con un mensaje claro cuan
 ## Ejercicio 4 — Pregunta 4
 
 Borrar una clase con reservas devuelve 409 porque la petición es válida, pero entra en conflicto con el estado actual de la clase: tiene reservas asociadas. Un 400 indicaría que los datos de la petición son incorrectos.
+
+## Pregunta 5
+
+El token contiene el ID del usuario en `sub` y las fechas de emisión (`iat`) y caducidad (`exp`). No incluimos el rol porque lo consultamos en PostgreSQL en cada petición protegida, de modo que cualquier cambio de permisos se aplica sin esperar a que caduque el token.
