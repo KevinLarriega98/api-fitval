@@ -75,7 +75,6 @@ export class ClassesService {
   }
 
   async remove(id: number): Promise<GymClass> {
-    // Si no existe, findOne lanza un 404.
     const gymClass = await this.findOne(id);
 
     const result = await this.pool.query<{ total: number }>(

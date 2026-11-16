@@ -1,6 +1,3 @@
--- Base de datos del gimnasio FitVal (la de la entrega de SQL, en inglés)
--- Se puede ejecutar todas las veces que quieras: borra y vuelve a crear todo.
-
 DROP TABLE IF EXISTS users, trainer_specialties, specialties, bookings, classes, trainers, cards, members, plans;
 
 CREATE TABLE plans (
@@ -61,7 +58,6 @@ CREATE TABLE trainer_specialties (
   UNIQUE (trainer_id, specialty_id)
 );
 
--- Usuarios de la API
 CREATE TABLE users (
   id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   email VARCHAR(255) NOT NULL UNIQUE,
@@ -69,8 +65,6 @@ CREATE TABLE users (
   role VARCHAR(20) NOT NULL DEFAULT 'member'
     CHECK (role IN ('member', 'staff'))
 );
-
--- Datos de prueba (los mismos de la entrega de SQL)
 
 INSERT INTO plans (name, monthly_price) VALUES
   ('Básico', 29.90),

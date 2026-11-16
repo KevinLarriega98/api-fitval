@@ -10,7 +10,6 @@ permissions:
   contents: read
 
 jobs:
-  # Check 1: revisa los .html. Esta API no tiene: dirá "Scanned 0 files" y pasará.
   htmlhint:
     runs-on: ubuntu-latest
     steps:
@@ -23,7 +22,6 @@ jobs:
       - name: Revisar el HTML con HTMLHint
         run: npx --yes htmlhint@1 "**/*.html" --ignore "dist/**,build/**,coverage/**"
 
-  # Check 2: revisa el código TypeScript con ESLint (tu script "lint")
   lint:
     runs-on: ubuntu-latest
     steps:

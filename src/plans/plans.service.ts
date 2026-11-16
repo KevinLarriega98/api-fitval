@@ -6,7 +6,6 @@ import { Plan, PlanRow, toPlan } from './plan';
 export class PlansService {
   constructor(private readonly pool: Pool) {}
 
-  // GET /api/plans: del más barato al más caro
   async findAll(): Promise<Plan[]> {
     const result = await this.pool.query<PlanRow>(
       `SELECT p.id, p.name, p.monthly_price,
@@ -16,6 +15,6 @@ export class PlansService {
  GROUP BY p.id, p.name, p.monthly_price
  ORDER BY p.monthly_price`,
     );
-    return result.rows.map(toPlan); // cada fila → un plan de la API
+    return result.rows.map(toPlan);
   }
 }
