@@ -40,3 +40,7 @@ Borrar una clase con reservas devuelve 409 porque la petición es válida, pero 
 ## Pregunta 5
 
 El token contiene el ID del usuario en `sub` y las fechas de emisión (`iat`) y caducidad (`exp`). No incluimos el rol porque lo consultamos en PostgreSQL en cada petición protegida, de modo que cualquier cambio de permisos se aplica sin esperar a que caduque el token.
+
+## Pregunta 6
+
+El mismo token de recepción funciona después del cambio a `staff` porque identifica al usuario mediante `sub`, y los guards consultan su rol actual en PostgreSQL en cada petición protegida. Si la autorización utilizara el rol guardado dentro del token, seguiría siendo `member` hasta emitir un token nuevo y no tendría los nuevos permisos.

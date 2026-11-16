@@ -7,9 +7,12 @@ import {
   ParseIntPipe,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { ClassesService } from './classes.service';
 import { CreateClassDto } from './dto/create-class.dto';
+import { AuthGuard } from '../auth/auth.guard';
+import { StaffGuard } from '../auth/staff.guard';
 
 @Controller('classes')
 export class ClassesController {
@@ -26,11 +29,13 @@ export class ClassesController {
   }
 
   @Post()
+  @UseGuards(AuthGuard, StaffGuard)
   create(@Body() dto: CreateClassDto) {
     return this.classesService.create(dto);
   }
 
   @Delete(':id')
+  @UseGuards(AuthGuard, StaffGuard)
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.classesService.remove(id);
   }
