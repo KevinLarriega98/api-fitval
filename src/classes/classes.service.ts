@@ -3,10 +3,12 @@ import {
   NotFoundException,
   BadRequestException,
   ConflictException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { Pool } from 'pg';
 import { GymClass, GymClassRow, toGymClass } from './gym-class';
 import { CreateClassDto } from './dto/create-class.dto';
+import { Booking, BookingRow, toBooking } from './booking';
 
 @Injectable()
 export class ClassesService {
@@ -90,5 +92,61 @@ export class ClassesService {
     await this.pool.query('DELETE FROM classes WHERE id = $1', [id]);
 
     return gymClass;
+  }
+
+  async createBooking(classId: number, email: string): Promise<Booking> {
+    const client = await this.pool.connect();
+
+    try {
+      await client.query('BEGIN');
+
+      const classResult = await client.query<{ spots: number }>(
+        'SELECT spots FROM classes WHERE id = $1 FOR UPDATE',
+        [classId],
+      );
+
+      if (classResult.rows.length === 0) {
+        throw new NotFoundException('La clase no existe');
+      }
+
+      const memberResult = await client.query<{ id: number }>(
+        'SELECT id FROM members WHERE email = $1',
+        [email],
+      );
+
+      if (memberResult.rows.length === 0) {
+        throw new ForbiddenException('Solo los socios pueden reservar');
+      }
+
+      const countResult = await client.query<{ total: number }>(
+        'SELECT COUNT(*)::int AS total FROM bookings WHERE class_id = $1',
+        [classId],
+      );
+
+      if (countResult.rows[0].total >= classResult.rows[0].spots) {
+        throw new ConflictException('La clase está llena');
+      }
+
+      const result = await client.query<BookingRow>(
+        `INSERT INTO bookings (member_id, class_id, booked_at)
+       VALUES ($1, $2, CURRENT_DATE)
+       RETURNING id, member_id, class_id, booked_at::text AS booked_at`,
+        [memberResult.rows[0].id, classId],
+      );
+
+      await client.query('COMMIT');
+
+      return toBooking(result.rows[0]);
+    } catch (error: unknown) {
+      await client.query('ROLLBACK');
+
+      if (error instanceof Error && 'code' in error && error.code === '23505') {
+        throw new ConflictException('Ya tienes una reserva en esta clase');
+      }
+
+      throw error;
+    } finally {
+      client.release();
+    }
   }
 }
