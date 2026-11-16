@@ -1,6 +1,5 @@
 export type UserRole = 'member' | 'staff';
 
-// Fila de PostgreSQL: solo para uso interno.
 export interface UserRow {
   id: number;
   email: string;
@@ -8,7 +7,6 @@ export interface UserRow {
   role: UserRole;
 }
 
-// Datos que podemos devolver al cliente.
 export interface User {
   id: number;
   email: string;

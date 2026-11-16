@@ -1,98 +1,112 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+﻿# FitVal · API del gimnasio
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+API con NestJS 11 y PostgreSQL 17 para consultar planes y clases, reservar plazas y gestionar clases con permisos de personal. Incluye registro, login con JWT y contraseñas protegidas con Argon2.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Puesta en marcha
 
-## Description
+Necesitas Node.js 24, npm y Docker con Docker Compose.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Project setup
+### 1. Instalar las dependencias
 
 ```bash
-$ npm install
+git clone https://github.com/KevinLarriega98/api-fitval.git
+cd api-fitval
+npm ci
 ```
 
-## Compile and run the project
+### 2. Configurar el entorno
+
+Copia `.env.example` como `.env`. En PowerShell:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Configura `DATABASE_URL` con el usuario, la contraseña y la base de datos de `compose.yaml`, usando `localhost:5433`. Sustituye `JWT_SECRET=CAMBIAME` por una clave generada con:
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+node -e "console.log(require('node:crypto').randomBytes(32).toString('hex'))"
 ```
 
-## Run tests
+El archivo `.env` está excluido de Git.
+
+### 3. Preparar PostgreSQL
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+docker compose up -d
 ```
 
-## Deployment
+Carga las tablas y los datos de ejemplo desde PowerShell:
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+```powershell
+Get-Content -Encoding UTF8 database/schema.sql | docker exec -i postgres-fitval psql -U alumno -d fitval
+```
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+En Git Bash, macOS o Linux:
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+docker exec -i postgres-fitval psql -U alumno -d fitval < database/schema.sql
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+**Ejecutar `schema.sql` borra las tablas y vuelve a cargar los datos de ejemplo. Los usuarios registrados también se borran y la tabla `users` queda vacía.**
 
-## Resources
+### 4. Arrancar la API
 
-Check out a few resources that may come in handy when working with NestJS:
+```bash
+npm run start:dev
+```
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+Comprueba `GET http://localhost:3000/api/health`:
 
-## Support
+```json
+{ "status": "ok", "database": "fitval" }
+```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## Rutas
 
-## Stay in touch
+Todas las rutas empiezan por `/api`.
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+| Método | Ruta                    | Acceso                                 | Función                                          |
+| ------ | ----------------------- | -------------------------------------- | ------------------------------------------------ |
+| GET    | `/health`               | Público                                | Comprobar la conexión con PostgreSQL             |
+| GET    | `/plans`                | Público                                | Ver planes, precios y número de socios           |
+| GET    | `/classes`              | Público                                | Listar clases por fecha; admite `?activity=yoga` |
+| GET    | `/classes/:id`          | Público                                | Consultar una clase                              |
+| POST   | `/classes`              | Personal (`staff`)                     | Crear una clase                                  |
+| DELETE | `/classes/:id`          | Personal (`staff`)                     | Borrar una clase sin reservas                    |
+| POST   | `/classes/:id/bookings` | Usuario autenticado con socio asociado | Reservar una plaza                               |
+| POST   | `/auth/register`        | Público                                | Registrar un usuario con rol `member`            |
+| POST   | `/auth/login`           | Público                                | Obtener un token de acceso                       |
+| GET    | `/auth/me`              | Usuario autenticado                    | Consultar el usuario actual                      |
 
-## License
+## Autenticación y reservas
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+Para registrar a Ana, envía este JSON a `POST /api/auth/register`:
+
+```json
+{
+  "email": "ana@gym.com",
+  "password": "12345678"
+}
+```
+
+Haz login con los mismos datos en `POST /api/auth/login`. En Postman, selecciona **Authorization → Bearer Token** y pega el `accessToken` recibido. Los tokens duran una hora y los permisos se consultan en la base de datos.
+
+Una reserva se envía sin body. El correo del usuario debe coincidir con un socio de `members`: Ana corresponde al socio 1. La API devuelve `409` si la clase está llena o la reserva ya existe, `403` si el usuario no tiene socio asociado y `404` si la clase no existe.
+
+Para probar los permisos de personal, registra primero `recepcion@fitval.com` mediante la API y cambia su rol:
+
+```bash
+docker exec -it postgres-fitval psql -U alumno -d fitval -c "UPDATE users SET role = 'staff' WHERE email = 'recepcion@fitval.com';"
+```
+
+## Comprobaciones
+
+```bash
+npm run lint
+npm run build
+```
+
+GitHub Actions revisa HTML, ejecuta ESLint y compila el proyecto en cada PR hacia `main` y cada push a `main`. Las pruebas funcionales se documentan en las PR. El archivo `test/app.e2e-spec.ts` conserva la prueba inicial de NestJS y todavía no está adaptado a esta API.
+
+Las respuestas de la entrega están en [respuestas.md](respuestas.md).

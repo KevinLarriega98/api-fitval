@@ -3,9 +3,8 @@ import { Pool } from 'pg';
 
 @Controller()
 export class AppController {
-  constructor(private readonly pool: Pool) {} // NestJS nos da el Pool
+  constructor(private readonly pool: Pool) {}
 
-  // GET /api/health: ¿está viva la API? ¿y la base de datos?
   @Get('health')
   async health() {
     const result = await this.pool.query<{ database: string }>(

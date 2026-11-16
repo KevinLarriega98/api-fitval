@@ -1,4 +1,3 @@
-// Así llega una clase desde PostgreSQL (con el nombre del monitor, del JOIN)
 export interface GymClassRow {
   id: number;
   activity: string;
@@ -8,7 +7,6 @@ export interface GymClassRow {
   trainer_name: string;
 }
 
-// Así la devuelve nuestra API
 export interface GymClass {
   id: number;
   activity: string;
@@ -18,7 +16,6 @@ export interface GymClass {
   trainerName: string;
 }
 
-// Convierte una fila en una clase de la API
 export function toGymClass(row: GymClassRow): GymClass {
   return {
     id: row.id,

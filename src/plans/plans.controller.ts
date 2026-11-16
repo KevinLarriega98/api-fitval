@@ -1,11 +1,11 @@
 import { Controller, Get } from '@nestjs/common';
 import { PlansService } from './plans.service';
 
-@Controller('plans') // rutas /api/plans
+@Controller('plans')
 export class PlansController {
   constructor(private readonly plansService: PlansService) {}
 
-  @Get() // GET /api/plans
+  @Get()
   findAll() {
     return this.plansService.findAll();
   }
