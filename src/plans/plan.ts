@@ -20,6 +20,6 @@ export function toPlan(row: PlanRow): Plan {
     id: row.id,
     name: row.name,
     monthlyPrice: Number(row.monthly_price), // "29.90" → 29.9
-    memberCount: row.member_count,
+    memberCount: "Error de prueba",
   };
 }
