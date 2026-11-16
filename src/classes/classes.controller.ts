@@ -7,11 +7,13 @@ import {
   ParseIntPipe,
   Post,
   Query,
+  Req,
+  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import { ClassesService } from './classes.service';
 import { CreateClassDto } from './dto/create-class.dto';
-import { AuthGuard } from '../auth/auth.guard';
+import { type AuthenticatedRequest, AuthGuard } from '../auth/auth.guard';
 import { StaffGuard } from '../auth/staff.guard';
 
 @Controller('classes')
@@ -38,5 +40,18 @@ export class ClassesController {
   @UseGuards(AuthGuard, StaffGuard)
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.classesService.remove(id);
+  }
+
+  @Post(':id/bookings')
+  @UseGuards(AuthGuard)
+  createBooking(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() request: AuthenticatedRequest,
+  ) {
+    if (!request.user) {
+      throw new UnauthorizedException();
+    }
+
+    return this.classesService.createBooking(id, request.user.email);
   }
 }
