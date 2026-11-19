@@ -48,3 +48,7 @@ El mismo token de recepción funciona después del cambio a `staff` porque ident
 ## Pregunta 7
 
 El test no necesita PostgreSQL porque usamos un Pool falso cuyo método `query` devuelve las respuestas que preparamos con Jest. Así comprobamos cómo reacciona el servicio, pero no que el SQL sea válido ni que funcione con las tablas y restricciones reales de PostgreSQL.
+
+## Pregunta 8
+
+El correo lleva `Date.now()` para que cada ejecución registre un usuario nuevo con un correo distinto, ya que `email` es único en la tabla `users`. Con un correo fijo, la segunda ejecución daría `409` en el registro porque el usuario ya existiría, y el test dependería de datos que dejó una ejecución anterior en lugar de crear los suyos.
