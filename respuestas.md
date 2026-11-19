@@ -44,3 +44,7 @@ El token contiene el ID del usuario en `sub` y las fechas de emisión (`iat`) y 
 ## Pregunta 6
 
 El mismo token de recepción funciona después del cambio a `staff` porque identifica al usuario mediante `sub`, y los guards consultan su rol actual en PostgreSQL en cada petición protegida. Si la autorización utilizara el rol guardado dentro del token, seguiría siendo `member` hasta emitir un token nuevo y no tendría los nuevos permisos.
+
+## Pregunta 7
+
+El test no necesita PostgreSQL porque usamos un Pool falso cuyo método `query` devuelve las respuestas que preparamos con Jest. Así comprobamos cómo reacciona el servicio, pero no que el SQL sea válido ni que funcione con las tablas y restricciones reales de PostgreSQL.
