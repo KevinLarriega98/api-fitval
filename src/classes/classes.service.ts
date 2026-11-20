@@ -6,9 +6,16 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { Pool } from 'pg';
-import { GymClass, GymClassRow, toGymClass } from './gym-class';
+import { GymClass, GymClassRow, GymClassPage, toGymClass } from './gym-class';
 import { CreateClassDto } from './dto/create-class.dto';
 import { Booking, BookingRow, toBooking } from './booking';
+import { ListClassesQueryDto } from './dto/list-classes-query.dto';
+
+const SORT_COLUMNS = {
+  startsAt: 'c.starts_at',
+  activity: 'c.activity',
+  spots: 'c.spots',
+};
 
 @Injectable()
 export class ClassesService {
@@ -33,6 +40,48 @@ export class ClassesService {
         : await this.pool.query<GymClassRow>(`${query} ORDER BY c.starts_at`);
 
     return result.rows.map(toGymClass);
+  }
+
+  async findPage(query: ListClassesQueryDto): Promise<GymClassPage> {
+    const { page, limit, sort, order, activity } = query;
+    const offset = (page - 1) * limit;
+    const direction = order === 'desc' ? 'DESC' : 'ASC';
+
+    const where =
+      activity !== undefined ? "WHERE c.activity ILIKE '%' || $1 || '%'" : '';
+
+    const filterValues = activity !== undefined ? [activity] : [];
+
+    const countResult = await this.pool.query<{ total: number }>(
+      `SELECT COUNT(*)::int AS total
+     FROM classes c
+     ${where}`,
+      filterValues,
+    );
+
+    const limitPosition = filterValues.length + 1;
+    const offsetPosition = filterValues.length + 2;
+
+    const result = await this.pool.query<GymClassRow>(
+      `SELECT c.id, c.activity, c.room, c.starts_at, c.spots,
+            t.name AS trainer_name
+     FROM classes c
+     JOIN trainers t ON t.id = c.trainer_id
+     ${where}
+     ORDER BY ${SORT_COLUMNS[sort]} ${direction}, c.id
+     LIMIT $${limitPosition} OFFSET $${offsetPosition}`,
+      [...filterValues, limit, offset],
+    );
+
+    const total = countResult.rows[0].total;
+
+    return {
+      data: result.rows.map(toGymClass),
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    };
   }
 
   async findOne(id: number): Promise<GymClass> {
