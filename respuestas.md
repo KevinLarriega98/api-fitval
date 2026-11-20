@@ -52,3 +52,7 @@ El test no necesita PostgreSQL porque usamos un Pool falso cuyo método `query` 
 ## Pregunta 8
 
 El correo lleva `Date.now()` para que cada ejecución registre un usuario nuevo con un correo distinto, ya que `email` es único en la tabla `users`. Con un correo fijo, la segunda ejecución daría `409` en el registro porque el usuario ya existiría, y el test dependería de datos que dejó una ejecución anterior en lugar de crear los suyos.
+
+## Pregunta 9
+
+El `ORDER BY` es seguro porque usamos columnas de una lista fija (`SORT_COLUMNS`) y una dirección limitada a `ASC` o `DESC`, sin insertar directamente el texto del usuario. Al probar `sort=id;DROP TABLE classes`, el DTO lo rechaza con `400` mediante `@IsIn`, antes de que llegue a PostgreSQL.

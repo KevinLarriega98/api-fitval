@@ -26,3 +26,11 @@ export function toGymClass(row: GymClassRow): GymClass {
     trainerName: row.trainer_name,
   };
 }
+
+export interface GymClassPage {
+  data: GymClass[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}

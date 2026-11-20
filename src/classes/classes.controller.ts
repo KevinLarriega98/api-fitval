@@ -10,11 +10,13 @@ import {
   Req,
   UnauthorizedException,
   UseGuards,
+  Version,
 } from '@nestjs/common';
 import { ClassesService } from './classes.service';
 import { CreateClassDto } from './dto/create-class.dto';
 import { type AuthenticatedRequest, AuthGuard } from '../auth/auth.guard';
 import { StaffGuard } from '../auth/staff.guard';
+import { ListClassesQueryDto } from './dto/list-classes-query.dto';
 
 @Controller('classes')
 export class ClassesController {
@@ -28,6 +30,12 @@ export class ClassesController {
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.classesService.findOne(id);
+  }
+
+  @Get()
+  @Version('2')
+  findPage(@Query() query: ListClassesQueryDto) {
+    return this.classesService.findPage(query);
   }
 
   @Post()

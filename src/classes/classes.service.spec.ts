@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { Pool } from 'pg';
 import { ClassesService } from './classes.service';
+import { ListClassesQueryDto } from './dto/list-classes-query.dto';
 
 const spinningRow = {
   id: 1,
@@ -87,5 +88,23 @@ describe('ClassesService', () => {
       expect.stringContaining('DELETE'),
       [1],
     );
+  });
+
+  it('findPage devuelve el total y calcula las páginas', async () => {
+    fakePool.query
+      .mockResolvedValueOnce({ rows: [{ total: 7 }] })
+      .mockResolvedValueOnce({ rows: [spinningRow] });
+
+    const query = new ListClassesQueryDto();
+    query.limit = 3;
+
+    const result = await service.findPage(query);
+
+    expect(result.total).toBe(7);
+    expect(result.totalPages).toBe(3);
+    expect(result.page).toBe(1);
+    expect(result.limit).toBe(3);
+    expect(result.data).toHaveLength(1);
+    expect(result.data[0].trainerName).toBe('Carla Navarro');
   });
 });
