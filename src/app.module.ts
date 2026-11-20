@@ -5,6 +5,8 @@ import { PlansModule } from './plans/plans.module';
 import { ClassesModule } from './classes/classes.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -13,7 +15,12 @@ import { AuthModule } from './auth/auth.module';
     ClassesModule,
     UsersModule,
     AuthModule,
+    ThrottlerModule.forRoot({
+      throttlers: [{ ttl: 60_000, limit: 20 }],
+      errorMessage: 'Demasiadas peticiones. Espera un poco.',
+    }),
   ],
   controllers: [AppController],
+  providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
 })
 export class AppModule {}

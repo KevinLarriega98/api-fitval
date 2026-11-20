@@ -117,4 +117,23 @@ describe('API de FitVal', () => {
       .get('/api/v2/classes?limit=100')
       .expect(400);
   });
+
+  it('los errores 404 incluyen path y timestamp', async () => {
+    const response = await request(app.getHttpServer())
+      .get('/api/v1/classes/999999')
+      .expect(404);
+
+    expect(response.body).toHaveProperty('statusCode', 404);
+    expect(response.body).toHaveProperty('message');
+    expect(response.body).toHaveProperty('path', '/api/v1/classes/999999');
+    expect(response.body).toHaveProperty('timestamp');
+  });
+
+  it('las respuestas no incluyen x-powered-by', async () => {
+    const response = await request(app.getHttpServer())
+      .get('/api/v1/plans')
+      .expect(200);
+
+    expect(response.headers['x-powered-by']).toBeUndefined();
+  });
 });
