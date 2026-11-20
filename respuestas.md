@@ -56,3 +56,7 @@ El correo lleva `Date.now()` para que cada ejecución registre un usuario nuevo 
 ## Pregunta 9
 
 El `ORDER BY` es seguro porque usamos columnas de una lista fija (`SORT_COLUMNS`) y una dirección limitada a `ASC` o `DESC`, sin insertar directamente el texto del usuario. Al probar `sort=id;DROP TABLE classes`, el DTO lo rechaza con `400` mediante `@IsIn`, antes de que llegue a PostgreSQL.
+
+## Pregunta 10
+
+El login tiene un límite más estricto para frenar ataques de fuerza bruta que prueban muchas contraseñas. Sin `trust proxy` en Render, la API podría identificar la IP del proxy como la de todos los clientes, haciendo que compartieran el límite y bloqueando a usuarios legítimos.
