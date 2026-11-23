@@ -13,6 +13,8 @@ async function bootstrap() {
 
   configureApp(app);
 
+  app.useStaticAssets('uploads', { prefix: '/uploads' });
+
   await app.listen(process.env.PORT ?? 3000);
 }
 

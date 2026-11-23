@@ -147,4 +147,12 @@ describe('API de FitVal', () => {
       'Fuerza',
     ]);
   });
+
+  it('POST /api/v1/trainers/1/photo sin token responde 401', async () => {
+    const response = await request(app.getHttpServer())
+      .post('/api/v1/trainers/1/photo')
+      .attach('photo', Buffer.from('hola'), 'foto.png');
+
+    expect(response.status).toBe(401);
+  });
 });
