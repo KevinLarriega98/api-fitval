@@ -60,3 +60,7 @@ El `ORDER BY` es seguro porque usamos columnas de una lista fija (`SORT_COLUMNS`
 ## Pregunta 10
 
 El login tiene un límite más estricto para frenar ataques de fuerza bruta que prueban muchas contraseñas. Sin `trust proxy` en Render, la API podría identificar la IP del proxy como la de todos los clientes, haciendo que compartieran el límite y bloqueando a usuarios legítimos.
+
+## Pregunta 11
+
+Sin la transacción, se guardaron Óscar y su relación con Fuerza, aunque la API devolvió `400` al comprobar la especialidad 99, que no existe. Nuria tiene el id 6 porque el intento fallido consumió el 5: un `ROLLBACK` deshace los datos, pero no recupera los números de la secuencia.
