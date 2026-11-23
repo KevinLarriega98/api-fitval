@@ -7,7 +7,11 @@ import helmet from 'helmet';
 import { AllExceptionsFilter } from './common/all-exceptions.filter';
 
 export function configureApp(app: INestApplication): void {
-  app.use(helmet());
+  app.use(
+    helmet({
+      crossOriginResourcePolicy: { policy: 'cross-origin' },
+    }),
+  );
 
   app.useGlobalFilters(new AllExceptionsFilter());
 
