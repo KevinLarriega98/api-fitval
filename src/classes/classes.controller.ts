@@ -17,7 +17,9 @@ import { CreateClassDto } from './dto/create-class.dto';
 import { type AuthenticatedRequest, AuthGuard } from '../auth/auth.guard';
 import { StaffGuard } from '../auth/staff.guard';
 import { ListClassesQueryDto } from './dto/list-classes-query.dto';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('classes')
 @Controller('classes')
 export class ClassesController {
   constructor(private readonly classesService: ClassesService) {}
@@ -40,18 +42,21 @@ export class ClassesController {
 
   @Post()
   @UseGuards(AuthGuard, StaffGuard)
+  @ApiBearerAuth()
   create(@Body() dto: CreateClassDto) {
     return this.classesService.create(dto);
   }
 
   @Delete(':id')
   @UseGuards(AuthGuard, StaffGuard)
+  @ApiBearerAuth()
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.classesService.remove(id);
   }
 
   @Post(':id/bookings')
   @UseGuards(AuthGuard)
+  @ApiBearerAuth()
   createBooking(
     @Param('id', ParseIntPipe) id: number,
     @Req() request: AuthenticatedRequest,
