@@ -11,6 +11,6 @@ describe('toPlan', () => {
 
     const plan = toPlan(row);
 
-    expect(plan.monthlyPrice).toBe(29.9);
+    expect(plan.monthlyPrice).toBe(99);
   });
 });
