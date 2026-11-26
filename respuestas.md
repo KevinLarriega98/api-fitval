@@ -68,3 +68,15 @@ Sin la transacción, se guardaron Óscar y su relación con Fuerza, aunque la AP
 ## Pregunta 12
 
 Lo impide el navegador: la API responde `200` con los planes, pero el navegador compara `Access-Control-Allow-Origin: http://localhost:5173` con el origen de la web, `https://otra-web.com`, y como no coinciden no deja que su JavaScript lea la respuesta. Postman y curl no son navegadores y no aplican CORS, por eso reciben los planes aunque digan venir de otra web.
+
+## Pregunta 13
+
+Ahora `/api/v1/health` dice `postgres`, porque la ruta consulta `current_database()` y en Supabase la base de datos se llama `postgres`, mientras que en Docker se llama `fitval`. No he cambiado nada del código: el `Pool` lee la conexión de `DATABASE_URL`, así que solo he cambiado esa línea del `.env` para apuntar a Supabase.
+
+## Pregunta 14
+
+Después del redespliegue la foto da `404`, pero el `photoUrl` del monitor sigue apuntando a ella. La imagen se guardaba en la carpeta `uploads/` del disco del servidor de Render, que se crea de nuevo en cada despliegue a partir del código de GitHub (donde `uploads/` no está), así que el fichero se pierde. En cambio, el `photoUrl` está guardado en Supabase, que no se borra. Las fotos habría que guardarlas en un almacenamiento de ficheros independiente del servidor, como Supabase Storage.
+
+## Pregunta 15
+
+La Direct connection de Supabase solo tiene dirección IPv6 y Render no tiene salida IPv6, por eso la API arranca pero la primera consulta falla con `ENETUNREACH`: no hay ruta de red hasta esa dirección. El Session pooler tiene dirección IPv4, así que Render sí puede conectarse. En el 13.9 recibo `401` ("Token inválido o caducado"), porque el token de Ana se firmó con el secreto anterior y la API ahora comprueba la firma con el nuevo, así que no coinciden. Cambiaría el secreto a propósito si se filtrara, por ejemplo si se sube por error a GitHub, porque así invalido todos los tokens emitidos y obligo a todos los usuarios a hacer login de nuevo.
