@@ -15,6 +15,10 @@ export function configureApp(app: INestApplication): void {
 
   app.useGlobalFilters(new AllExceptionsFilter());
 
+  app.enableCors({
+    origin: process.env.CORS_ORIGIN ?? 'http://localhost:5173',
+  });
+
   app.setGlobalPrefix('api');
 
   app.enableVersioning({

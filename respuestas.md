@@ -64,3 +64,7 @@ El login tiene un límite más estricto para frenar ataques de fuerza bruta que 
 ## Pregunta 11
 
 Sin la transacción, se guardaron Óscar y su relación con Fuerza, aunque la API devolvió `400` al comprobar la especialidad 99, que no existe. Nuria tiene el id 6 porque el intento fallido consumió el 5: un `ROLLBACK` deshace los datos, pero no recupera los números de la secuencia.
+
+## Pregunta 12
+
+Lo impide el navegador: la API responde `200` con los planes, pero el navegador compara `Access-Control-Allow-Origin: http://localhost:5173` con el origen de la web, `https://otra-web.com`, y como no coinciden no deja que su JavaScript lea la respuesta. Postman y curl no son navegadores y no aplican CORS, por eso reciben los planes aunque digan venir de otra web.
